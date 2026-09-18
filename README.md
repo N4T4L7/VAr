@@ -1,2 +1,2 @@
-# Visi-n-Artificial
+# Vision_Artificial
 ESCOM - Materia Vision Artificial
