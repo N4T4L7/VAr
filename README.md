@@ -1,2 +1,2 @@
-# Vision_Artificial
+# Practicas de Laboratorio
 ESCOM - Materia Vision Artificial
