@@ -6,8 +6,8 @@
 ---
 
 ## 👥 Autores
-* 👩‍💻 **[Gurrola Pérez Natalia Annais]** 
-* 👩‍💻 **[Peralta Llera Elizabeth]**
+* 👩‍💻 **Gurrola Pérez Natalia Annais** 
+* 👩‍💻 **Peralta Llera Elizabeth**
 
 ---
 
