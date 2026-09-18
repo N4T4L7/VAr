@@ -7,7 +7,7 @@
 
 ## 👥 Autores
 * 👩‍💻 **[Gurrola Pérez Natalia Annais]** 
-* 👩‍💻 **[Nombre del segundo integrante]**
+* 👩‍💻 **[Peralta Llera Elizabeth]**
 
 ---
 
