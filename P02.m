@@ -1,79 +1,108 @@
-% PRA 2: Definir las 5 clases usadas en la PRA 1
-% y crear un menú para clasificar por Distancia Mínima o Mahalanobis.
+% PRA 2: Definir las 5 clases y menú de distancias (Mínima y Mahalanobis)
+clc; clear all; close all; warning off all;
 
-clc; clear; close all;
+% 1. Definir los centroides y generar 5 clases
+num_rep = 7;
+dispersion = 6;
 
-% 1. Recrear las 5 clases de la PRA 1
-num_rep = 7; dispersion = 0.6;
-C1 = repmat([-5, 5], num_rep, 1) + dispersion * randn(num_rep, 2);
-C2 = repmat([5, 5], num_rep, 1) + dispersion * randn(num_rep, 2);
-C3 = repmat([-5, -5], num_rep, 1) + dispersion * randn(num_rep, 2);
-C4 = repmat([0, 0], num_rep, 1) + dispersion * randn(num_rep, 2);
-C5 = repmat([5, -5], num_rep, 1) + dispersion * randn(num_rep, 2);
+mu1 = [-50; 50];
+mu2 = [50; 50];
+mu3 = [-50; -50];
+mu4 = [0; 0];
+mu5 = [50; -50];
 
-% Guardar en celdas para facilitar cálculos iterativos
-Clases = {C1, C2, C3, C4, C5};
+c1 = repmat(mu1, 1, num_rep) + dispersion * randn(2, num_rep);
+c2 = repmat(mu2, 1, num_rep) + dispersion * randn(2, num_rep);
+c3 = repmat(mu3, 1, num_rep) + dispersion * randn(2, num_rep);
+c4 = repmat(mu4, 1, num_rep) + dispersion * randn(2, num_rep);
+c5 = repmat(mu5, 1, num_rep) + dispersion * randn(2, num_rep);
 
-% Calcular medias (centroides) y matrices de covarianza para cada clase
-Medias = zeros(5, 2);
-Covarianzas = cell(1, 5);
-for i = 1:5
-Medias(i, :) = mean(Clases{i});
-Covarianzas{i} = cov(Clases{i});
-end
+clases = {c1, c2, c3, c4, c5};
 
-% 2. Mostrar Menú del día
-disp('=== Nuestro Menú del día/hoy ===');
-disp('1) Dist. Mínima (Euclidiana al centroide)');
-disp('2) Dist. Mahalanobis');
-opcion = input('Seleccione una opción (1 o 2): ');
-
-% 3. Pedir el vector al usuario
-disp('Ingrese la ubicación del nuevo vector a clasificar:');
-x_val = input('x: ');
-y_val = input('y: ');
-vector_nuevo = [x_val, y_val];
-
-distancias = zeros(1, 5);
-
-% 4. Lógica de clasificación
-if opcion == 1
-% 1) Distancia Mínima (Euclidiana)
-for i = 1:5
-% Norma de la diferencia entre el vector y el centroide
-distancias(i) = norm(vector_nuevo - Medias(i, :));
-end
-metodo = 'Distancia Mínima';
-
-elseif opcion == 2
-% 2) Distancia de Mahalanobis
-for i = 1:5
-dif = vector_nuevo - Medias(i, :);
-% Fórmula: sqrt( (x-mu) * Sigma^-1 * (x-mu)' )
-distancias(i) = sqrt(dif * inv(Covarianzas{i}) * dif');
-end
-metodo = 'Distancia de Mahalanobis';
-else
-disp('Opción no válida.');
-return;
-end
-
-% Encontrar la clase con la menor distancia
-[dist_minima, clase_asignada] = min(distancias);
-
-% 5. Mostrar resultados
-fprintf('\nResultados usando %s:\n', metodo);
-for i=1:5
-fprintf('Distancia a C%d: %.4f\n', i, distancias(i));
-end
-fprintf('-> El vector pertenece a la Clase: C%d\n', clase_asignada);
-
-% Graficar para visualizar
-figure; hold on; grid on;
+% 2. Graficar las 5 clases iniciales
+figure(1)
+hold on; grid on;
 colores = ['r', 'b', 'g', 'm', 'c'];
+
 for i = 1:5
-plot(Clases{i}(:,1), Clases{i}(:,2), [colores(i) 'o'], 'MarkerFaceColor', colores(i));
+    plot(clases{i}(1,:), clases{i}(2,:), [colores(i) 'o'], ...
+        'MarkerSize', 8, 'MarkerFaceColor', colores(i), ...
+        'DisplayName', ['Clase ' num2str(i)]);
 end
-plot(x_val, y_val, 'kx', 'MarkerSize', 12, 'LineWidth', 2);
-title(sprintf('Clasificación por %s: Clase %d', metodo, clase_asignada));
+
+axis([-100 100 -100 100]);
+axis square;
+title('Práctica 2: Clasificación de Vectores');
+legend('Location', 'northeastoutside');
+
+% 3. Ciclo interactivo y Menú del Día
+continuar = 's';
+
+while lower(continuar) == 's'
+    disp(' ');
+    disp('=============================================');
+    disp('             INGRESAR VECTOR                 ');
+    disp('=============================================');
+    vx = input('  >> Coordenada en X: ');
+    vy = input('  >> Coordenada en Y: ');
+    vector = [vx; vy];
+
+    if vx < -100 || vx > 100 || vy < -100 || vy > 100
+        disp('---------------------------------------------');
+        fprintf('  [!] El vector [%.2f, %.2f] está FUERA DE LÍMITES.\n', vx, vy);
+        disp('---------------------------------------------');
+        plot(vx, vy, 'kx', 'MarkerSize', 12, 'LineWidth', 2, 'DisplayName', 'Fuera de límite');
+    else
+        disp(' ');
+        disp('=============================================');
+        disp('             NUESTRO MENÚ DEL DÍA            ');
+        disp('=============================================');
+        disp('  [ 1 ] Distancia Mínima (Euclidiana)');
+        disp('  [ 2 ] Distancia de Mahalanobis');
+        disp('---------------------------------------------');
+        opcion = input('  >> Selecciona una opción: ');
+
+        distancias = zeros(1, 5);
+
+        if opcion == 1
+            metodo = 'Distancia Mínima';
+            for i = 1:5
+                media = mean(clases{i}, 2);
+                distancias(i) = sqrt((vector(1) - media(1))^2 + (vector(2) - media(2))^2);
+            end
+
+        elseif opcion == 2
+            metodo = 'Distancia de Mahalanobis';
+            for i = 1:5
+                clase_actual = clases{i};
+                media = mean(clase_actual, 2);
+                dato = clase_actual - media;
+                matriz_cov = (1/length(clase_actual)) * (dato * dato');
+                inversa = inv(matriz_cov);
+                distancias(i) = sqrt((vector - media)' * inversa * (vector - media));
+            end
+        else
+            disp('  [!] Opción no válida. Intenta de nuevo.');
+            continue;
+        end
+
+        [minimo, busca] = min(distancias);
+
+        disp(' ');
+        disp('---------------------------------------------');
+        fprintf('  RESULTADO: Pertenece a la CLASE %d\n', busca);
+        fprintf('  Método: %s\n', metodo);
+        fprintf('  Distancia: %.2f\n', minimo);
+        disp('---------------------------------------------');
+
+        % Se cambió el color dinámico a 'kx' para que siempre sea negro
+        plot(vector(1,:), vector(2,:), 'kx', ...
+            'MarkerSize', 14, 'LineWidth', 3, 'DisplayName', ['Vector -> C' num2str(busca)]);
+    end
+
+    legend('Location', 'northeastoutside');
+
+    disp(' ');
+    continuar = input('¿Deseas probar otra vez (s/n)? ', 's');
+end
 hold off;
