@@ -47,11 +47,15 @@ while lower(continuar) == 's'
     vy = input('  >> Coordenada en Y: ');
     vector = [vx; vy];
 
+    % Generar un color RGB aleatorio para este punto específico
+    color_punto = rand(1, 3) * 0.8;
+
     if vx < -100 || vx > 100 || vy < -100 || vy > 100
         disp('---------------------------------------------');
         fprintf('  [!] El vector [%.2f, %.2f] está FUERA DE LÍMITES.\n', vx, vy);
         disp('---------------------------------------------');
-        plot(vx, vy, 'kx', 'MarkerSize', 12, 'LineWidth', 2, 'DisplayName', 'Fuera de límite');
+
+        plot(vx, vy, 'x', 'MarkerSize', 14, 'LineWidth', 3, 'Color', color_punto, 'DisplayName', 'Fuera de límite');
     else
         disp(' ');
         disp('=============================================');
@@ -60,7 +64,7 @@ while lower(continuar) == 's'
         disp('  [ 1 ] Distancia Mínima (Euclidiana)');
         disp('  [ 2 ] Distancia de Mahalanobis');
         disp('---------------------------------------------');
-        opcion = input('  >> Selecciona una opción: ');
+        opcion = input('  >> Selecciona una opción (1 o 2): ');
 
         distancias = zeros(1, 5);
 
@@ -95,10 +99,21 @@ while lower(continuar) == 's'
         fprintf('  Distancia: %.2f\n', minimo);
         disp('---------------------------------------------');
 
-        % Se cambió el color dinámico a 'kx' para que siempre sea negro
-        plot(vector(1,:), vector(2,:), 'kx', ...
-            'MarkerSize', 14, 'LineWidth', 3, 'DisplayName', ['Vector -> C' num2str(busca)]);
+        % 1. Calcular el centroide de la clase ganadora
+        centroide_ganador = mean(clases{busca}, 2);
+
+        % 2. Trazar la línea punteada hacia el centroide
+        plot([vector(1), centroide_ganador(1)], [vector(2), centroide_ganador(2)], '--', ...
+             'Color', color_punto, 'LineWidth', 1.5, 'HandleVisibility', 'off');
+
+        % 3. Graficar la 'x' del vector
+        plot(vector(1), vector(2), 'x', ...
+            'MarkerSize', 14, 'LineWidth', 3, 'Color', color_punto, ...
+            'DisplayName', ['Vector -> C' num2str(busca)]);
     end
+
+    % REFORZAR LOS LÍMITES PARA EVITAR QUE LA GRÁFICA HAGA ZOOM
+    axis([-100 100 -100 100]);
 
     legend('Location', 'northeastoutside');
 
